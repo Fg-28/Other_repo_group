@@ -17,37 +17,46 @@ def chart():
         if not labels or not current or not previous:
             return jsonify({"error": "Missing data"}), 400
 
-        x = np.arange(len(labels))  # label positions
-        width = 0.35  # width of each bar
+        x = np.arange(len(labels))
+        width = 0.35
 
-        plt.figure(figsize=(10, 5), facecolor='black')
+        # ✅ Use off-white background
+        bg_color = '#f4f4f4'
+        plt.figure(figsize=(10, 5), facecolor=bg_color)
         ax = plt.gca()
-        ax.set_facecolor('black')
+        ax.set_facecolor(bg_color)
 
-        # ✅ Plot current and previous bars with borders
-        bars1 = ax.bar(x - width/2, current, width, label='Current', color='skyblue', edgecolor='white', linewidth=1)
-        bars2 = ax.bar(x + width/2, previous, width, label='Previous', color='orange', edgecolor='white', linewidth=1)
+        # ✅ Plot bars with white edge borders
+        bars1 = ax.bar(x - width/2, current, width, label='Current',
+                       color='skyblue', edgecolor='white', linewidth=1)
+        bars2 = ax.bar(x + width/2, previous, width, label='Previous',
+                       color='orange', edgecolor='white', linewidth=1)
 
-        # ✅ Add quantity labels above bars
+        # ✅ Add labels above bars
         for bars in [bars1, bars2]:
             for bar in bars:
                 height = bar.get_height()
                 ax.text(bar.get_x() + bar.get_width()/2, height, f'{int(height)}',
-                        ha='center', va='bottom', color='white', fontsize=9)
+                        ha='center', va='bottom', color='black', fontsize=9)
 
-        ax.set_xlabel('LOB', color='white')
-        ax.set_ylabel('Quantity', color='white')
+        # ✅ Add axis labels and ticks
+        ax.set_xlabel('LOB', color='black')
+        ax.set_ylabel('Quantity', color='black')
         ax.set_xticks(x)
-        ax.set_xticklabels(labels, rotation=45, color='white')
-        ax.tick_params(colors='white')
+        ax.set_xticklabels(labels, rotation=45, color='black')
+        ax.tick_params(colors='black')
 
-        # ✅ Add legend
-        ax.legend(facecolor='black', edgecolor='white', labelcolor='white')
+        # ✅ Add horizontal gridlines
+        ax.yaxis.grid(True, linestyle='--', color='gray', alpha=0.6)
+        ax.xaxis.grid(False)
+
+        # ✅ Legend with matching background
+        ax.legend(facecolor=bg_color, edgecolor='gray', labelcolor='black')
 
         # ✅ Save image
         buf = io.BytesIO()
         plt.tight_layout()
-        plt.savefig(buf, format="png", facecolor='black')
+        plt.savefig(buf, format="png", facecolor=bg_color)
         buf.seek(0)
         encoded_image = base64.b64encode(buf.read()).decode('utf-8')
         buf.close()
